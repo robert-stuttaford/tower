@@ -383,9 +383,8 @@
 
 (defn translate
   "Takes dictionary key (or vector of descending- preference keys) within a
-  (possibly nil) root scope, and returns the best translation available for
-  given locale. With additional arguments, treats translation as pattern for
-  `fmt-msg`.
+  (possibly nil) scope, and returns the best translation available for given
+  locale. With additional arguments, treats translation as pattern for `fmt-msg`.
 
   See `example-tconfig` for config details."
   [loc config scope k-or-ks & fmt-msg-args]
@@ -421,10 +420,13 @@
     (if-not fmt-msg-args tr
       (apply fmt-msg loc tr fmt-msg-args))))
 
-(utils/defalias t' translate)
-(defn t "Like `translate` but uses a thread-local binding for translation scope."
+(defn t "Like `translate` but uses thread-local binding for translation scope."
   [loc config k-or-ks & fmt-msg-args]
   (apply translate loc config *tscope* k-or-ks fmt-msg-args))
+
+(defn t- "EXPERIMENTAL. Like `translate` but uses root (nil) translation scope."
+  [loc config k-or-ks & fmt-msg-args]
+  (apply translate loc config nil k-or-ks fmt-msg-args))
 
 (comment (t :en-ZA example-tconfig :example/foo)
          (with-tscope :example (t :en-ZA example-tconfig :foo))

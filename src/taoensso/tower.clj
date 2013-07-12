@@ -389,10 +389,14 @@
 
   See `example-tconfig` for config details."
   [loc config scope k-or-ks & fmt-msg-args]
-  (let [{:keys [dev-mode? dictionary fallback-locale log-missing-translation-fn]
+  (let [{:keys [dev-mode? dictionary scope fallback-locale log-missing-translation-fn]
          :or   {dev-mode?       @dev-mode?
                 fallback-locale (or (:default-locale config) ; Backwards comp
                                     @fallback-locale)}} config
+
+        ;; Experimental - intentionally undocumented
+        scope  (if (contains? config :scope) (:scope config) scope) ; May be nil
+
         dict   (compile-dict dictionary dev-mode?)
         ks     (if (vector? k-or-ks) k-or-ks [k-or-ks])
         get-tr #(get-in dict [(locale-key %1) (scoped scope %2)])
@@ -424,6 +428,8 @@
 
 (comment (t :en-ZA example-tconfig :example/foo)
          (with-tscope :example (t :en-ZA example-tconfig :foo))
+         (with-tscope :invalid
+           (t :en (assoc example-tconfig :scope nil) :example/foo))
 
          (t :en example-tconfig :invalid)
          (t :en example-tconfig [:invalid :example/foo])

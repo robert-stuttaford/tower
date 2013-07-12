@@ -422,7 +422,7 @@
 
 (defn t "Like `translate` but uses thread-local binding for translation scope."
   [loc config k-or-ks & fmt-msg-args]
-  (apply translate loc config *tscope* k-or-ks fmt-msg-args))
+  (apply translate loc config ::tscope k-or-ks fmt-msg-args))
 
 (defn t- "EXPERIMENTAL. Like `translate` but uses root (nil) translation scope."
   [loc config k-or-ks & fmt-msg-args]
